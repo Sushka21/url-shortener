@@ -23,12 +23,12 @@ jobs:
         uses: arduino/setup-task@v2 
         with:
           version: 3.x
-      - name: Install sqlc
-        uses: sqlc-dev/setup-sqlc@v4
-        with:
-          sqlc-version: '1.27.0'
-      - name: Install mockgen
-        run: go install github.com/golang/mock/mockgen@latest
+      - name: Install Tools & Download Dependencies
+        run: |
+          go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.27.0
+          go install github.com/golang/mock/mockgen@latest
+          go install go.uber.org/mock/mockgen@latest
+          go mod download
       - name: Generate code
         run: |
           task generate
