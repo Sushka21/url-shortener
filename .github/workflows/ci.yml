@@ -26,18 +26,16 @@ jobs:
       - name: Install Tools & Download Dependencies
         run: |
           go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.27.0
-          go install github.com/golang/mock/mockgen@latest
           go install go.uber.org/mock/mockgen@latest
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin latest
           go mod download
       - name: Generate code
         run: |
           task generate
       - name: Run Linter
-        uses: golangci/golangci-lint-action@v6
-        with:
-          version: v1.59 
+        run: task lint
       - name: Run Unit Tests
-        run: task test-unit
+        run: task unit-test
       - name: Run Integration Tests
         run: task test
       - name: Cleanup
