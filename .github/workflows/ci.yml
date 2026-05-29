@@ -27,6 +27,8 @@ jobs:
         uses: sqlc-dev/setup-sqlc@v4
         with:
           sqlc-version: '1.27.0'
+      - name: Install mockgen
+        run: go install github.com/golang/mock/mockgen@latest
       - name: Generate code
         run: |
           task generate
