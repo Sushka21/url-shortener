@@ -1,0 +1,7 @@
+.idea
+.vscode
+*.txt
+/bin
+.env
+.DS_Store
+mocks
