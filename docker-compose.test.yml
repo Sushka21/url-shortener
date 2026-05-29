@@ -1,0 +1,18 @@
+services:
+  integration-tests:
+    build:
+      context: .
+      dockerfile: ./integrations-test/Dockerfile
+    environment:
+      HTTP_HOST: "urlshortener" 
+      HTTP_PORT: "8080"
+      POSTGRES_HOST: "postgres"
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: "urlshortener"
+      POSTGRES_USER: "urlshortener_user"
+      POSTGRES_PASSWORD: "12345"
+    depends_on:
+      urlshortener:
+        condition: service_started
+      postgres:
+        condition: service_healthy

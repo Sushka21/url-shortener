@@ -62,6 +62,4 @@ func (u *URLHandler) Shorten(w http.ResponseWriter, r *http.Request) {
 		u.logger.Error("failed to encode shorten response", zap.Error(err))
 		return
 	}
-	u.logger.Info("successfully shortened url", zap.String("key", shortKey))
-
 }

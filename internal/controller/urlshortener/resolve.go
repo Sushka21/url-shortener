@@ -35,6 +35,5 @@ func (u *URLHandler) Resolve(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u.logger.Info("successfully resolved URL", zap.String("key", shortKey), zap.String("target", longURL))
 	http.Redirect(w, r, longURL, http.StatusTemporaryRedirect)
 }

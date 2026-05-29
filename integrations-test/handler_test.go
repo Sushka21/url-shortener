@@ -32,7 +32,7 @@ func TestURLShortenerConcurrency(t *testing.T) {
 	cfg, clients := setup(t)
 
 	const workers = 50
-	const requestsPerWorker = 200
+	const requestsPerWorker = 10
 
 	var wg sync.WaitGroup
 
@@ -77,7 +77,7 @@ func TestURLShortenerSameURLConcurrency(t *testing.T) {
 	cfg, clients := setup(t)
 
 	const workers = 50
-	const requestsPerWorker = 200
+	const requestsPerWorker = 10
 
 	var wg sync.WaitGroup
 

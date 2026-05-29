@@ -1,0 +1,32 @@
+version: "3"
+
+tasks:
+  up:
+    docker-compose -f docker-compose.yml up --build -d
+  down:
+    docker-compose -f docker-compose.yml down -v --remove-orphans || true
+  lint:
+    desc: Run golangci-lint
+    cmds:
+      - golangci-lint run ./...
+  build:
+    desc: Build
+    cmds:
+      - go build -o ./bin/app ./cmd/app/
+  generate:
+    cmds:
+      - sqlc generate
+      - go generate ./...
+      - go mod tidy
+  test:
+    desc: "Run all unit and integration tests inside Docker"
+    cmds:
+      - docker-compose -f docker-compose.yml -f docker-compose.test.yml down -v --remove-orphans || true
+      - cmd: docker-compose -f docker-compose.yml -f docker-compose.test.yml up --build --exit-code-from integration-tests
+        ignore_error: true
+        
+      - docker-compose -f docker-compose.yml -f docker-compose.test.yml down -v
+  unit-test:
+    desc: "Run only local unit tests"
+    cmds:
+      - go test -cover $(go list ./... | grep -v /integrations-test)

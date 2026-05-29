@@ -41,7 +41,7 @@ func setup(t *testing.T) (*configEnv, *testClients) {
 	db := initDB(t, appCfg)
 	cleanupDB(t, db)
 
-	baseURL := fmt.Sprintf("http://localhost:%s", appCfg.HTTP.Port)
+	baseURL := appCfg.ConstructBaseURL()
 	waitForServices(t, baseURL, 15*time.Second)
 
 	cfg := &configEnv{
@@ -49,9 +49,15 @@ func setup(t *testing.T) (*configEnv, *testClients) {
 		BaseURL: baseURL,
 	}
 
+	customTransport := &http.Transport{
+		MaxIdleConns:        100,
+		MaxIdleConnsPerHost: 100,
+	}
+
 	clients := &testClients{
 		HTTPClient: &http.Client{
-			Timeout: 5 * time.Second,
+			Timeout:   5 * time.Second,
+			Transport: customTransport,
 		},
 	}
 
@@ -82,7 +88,7 @@ func cleanupDB(t *testing.T, db *sql.DB) {
 
 	t.Cleanup(func() {
 		require.NoError(t, cleanDB(context.Background(), db))
-		db.Close()
+		require.NoError(t, db.Close())
 	})
 }
 
@@ -111,7 +117,7 @@ func waitForServices(t *testing.T, baseURL string, timeout time.Duration) {
 			time.Sleep(200 * time.Millisecond)
 			continue
 		}
-		resp.Body.Close()
+		_ = resp.Body.Close()
 
 		if resp.StatusCode < 500 {
 			return
@@ -164,7 +170,7 @@ func shortenURL(client *http.Client, baseURL, longURL string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("do post request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusCreated {
 		return "", fmt.Errorf("expected 201, got %d", resp.StatusCode)
@@ -194,7 +200,7 @@ func resolveURL(client *http.Client, baseURL, shortKey string) (string, int, err
 	if err != nil {
 		return "", 0, fmt.Errorf("do get request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	return resp.Header.Get("Location"), resp.StatusCode, nil
 }
