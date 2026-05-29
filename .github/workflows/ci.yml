@@ -28,7 +28,6 @@ jobs:
           go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.27.0
           go install go.uber.org/mock/mockgen@latest
           curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin latest
-          go mod download
       - name: Generate code
         run: |
           task generate
