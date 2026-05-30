@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/Sushka21/url-shortener/internal/entity"
 	"go.uber.org/zap"
 )
 
@@ -46,6 +47,10 @@ func (u *URLHandler) Shorten(w http.ResponseWriter, r *http.Request) {
 
 	shortKey, err := u.urlService.Shorten(r.Context(), req.LongURL)
 	if err != nil {
+		if errors.Is(err, entity.ErrCollision) {
+			http.Error(w, "conflict: short key collision on the server side", http.StatusConflict)
+			return
+		}
 		u.logger.Error("failed to shorten url in service", zap.Error(err))
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return

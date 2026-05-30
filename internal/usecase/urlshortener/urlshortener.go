@@ -65,7 +65,7 @@ func (u *urlService) Shorten(ctx context.Context, longURL string) (string, error
 				zap.String("new_url", longURL),
 			)
 
-			return "", errors.New("short key collision")
+			return "", entity.ErrCollision
 		}
 		return "", err
 	}

@@ -67,6 +67,18 @@ func TestURLHandler_Shorten(t *testing.T) {
 			expectedBody:   "invalid long_url format",
 		},
 		{
+			name:        "Error Short Key Collision (409 Conflict)",
+			requestBody: `{"long_url": "https://ozon.com"}`,
+			mockBehavior: func(s *mocks.MockURLService) {
+				s.EXPECT().
+					Shorten(gomock.Any(), "https://ozon.com").
+					Return("", entity.ErrCollision).
+					Times(1)
+			},
+			expectedStatus: http.StatusConflict,
+			expectedBody:   "conflict: short key collision on the server side",
+		},
+		{
 			name:        "Error service Internal Failure",
 			requestBody: `{"long_url": "https://google.com"}`,
 			mockBehavior: func(s *mocks.MockURLService) {

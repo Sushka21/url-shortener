@@ -3,5 +3,6 @@
 *.txt
 /bin
 .env
+.out
 .DS_Store
 mocks
