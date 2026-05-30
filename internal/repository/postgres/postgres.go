@@ -13,7 +13,6 @@ import (
 
 type (
 	DB interface {
-		Begin(ctx context.Context) (pgx.Tx, error)
 		sqlcShortenet.DBTX
 	}
 )
@@ -43,11 +42,13 @@ func (r *postgresRepository) Save(ctx context.Context, shortKey string, longURL 
 	if res.RowsAffected() == 0 {
 		return entity.ErrConflictURL
 	}
+
 	return nil
 }
 
 func (r *postgresRepository) GetByShortKey(ctx context.Context, shortKey string) (string, error) {
 	longURL, err := r.queries.GetByShortKey(ctx, shortKey)
+
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return "", entity.ErrURLNotFound
